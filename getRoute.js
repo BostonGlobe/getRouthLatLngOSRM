@@ -8,9 +8,11 @@ const coords = [[-71.0913604, 42.3398067],[-71.0569118, 42.3581058], [-71.069814
 
 //Below is the magic part!
     osrm.route({coordinates: coords, steps: true, geometries: 'geojson' }, function(error, response) {
-        console.log(response);
+        // console.log(response);
 
         var route = response.routes[0].geometry.coordinates; //This would give you the route coordinates [lng, lat]
+        // console.log(response.routes[0].legs);
+
 
         //Change the route to [lat,lng] so that leaflet could understand.
         var arrCoordinates =[];
@@ -34,6 +36,7 @@ const coords = [[-71.0913604, 42.3398067],[-71.0569118, 42.3581058], [-71.069814
             }
             console.log("The file was saved!");
         });
+
 
     });
 

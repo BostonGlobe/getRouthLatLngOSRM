@@ -1,4 +1,4 @@
-# GetLatLng using osrm.js
+# Finds the lat&lng of the fastest route between coordinates using osrm.js
 
 Using [Open Source Routing Machine - OSRM](https://github.com/Project-OSRM/osrm-backend) library that uses the REST http API
 that is exposed by ```osrm-routed```.
@@ -51,6 +51,7 @@ const coords = [[-71.0913604, 42.3398067],[-71.0569118, 42.3581058], [-71.069814
 // Run this code, when you saw "The file was saved!" in the console, you can open ./src/routelatlng.json and get the latlng array of the route going through all the spot you mentioned in coords
 // It may take a little bit longer if the distance is too long.
 
+
 ```
 
 # Testing
@@ -59,4 +60,8 @@ const coords = [[-71.0913604, 42.3398067],[-71.0569118, 42.3581058], [-71.069814
 npm test # run node tape tests
 firefox test.html # check the console if tape tests worked
 ```
+
+# Credit
+Many thanks to [Open Source Routing Machine - OSRM](https://github.com/Project-OSRM/osrm-backend)
+This simple tool is created by Yan Wu (yan.wu@globe.com).
 
