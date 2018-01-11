@@ -1,67 +1,55 @@
-# osrm.js
+# GetLatLng using osrm.js
 
-[![Build Status](https://travis-ci.org/Project-OSRM/osrm.js.svg?branch=master)](https://travis-ci.org/Project-OSRM/osrm.js)
-
-Client library for [Open Source Routing Machine - OSRM](https://github.com/Project-OSRM/osrm-backend) that uses the REST http API
+Using [Open Source Routing Machine - OSRM](https://github.com/Project-OSRM/osrm-backend) library that uses the REST http API
 that is exposed by ```osrm-routed```.
-
-The interface is compatible with [node-osrm](https://github.com/Project-OSRM/node-osrm). However it is not meant as
-replacement for ```node-osrm``` on the server.
 
 Can be used with NodeJS and with browserify.
 
 # Example
 
 ```js
-var OSRM = require('osrm.js');
+var OSRM = require('./src/osrm');
 
-var osrm = new OSRM("https://router.project-osrm.org");
+var osrm = new OSRM();
+const fs = require('fs');
 
-osrm.route({
-      coordinates: [[13.438640,52.519930], [13.415852,52.513191]],
-      steps: true,
-      alternatives: false,
-      overview: 'simplified',
-      geometries: 'polyline'
-   }, function(err, result) {
-   console.log(result);
-});
+// add [lng,lat] below. The array should include all the spot you want to include in the route. Actually, this is the only part you should change.
+// this example showed the route from Northeastern University to 53 State Street to Malden
+const coords = [[-71.0913604, 42.3398067],[-71.0569118, 42.3581058], [-71.0698143,42.4275271]];
 
-osrm.trip({
-      coordinates: [[13.438640,52.519930], [13.415852,52.513191]],
-      steps: true,
-      overview: 'simplified',
-      geometries: 'polyline'
-   }, function(err, result) {
-   console.log(result);
-});
+//Below is the magic part!
+    osrm.route({coordinates: coords, steps: true, geometries: 'geojson' }, function(error, response) {
+        console.log(response);
 
-osrm.match({
-      coordinates: [[13.438640,52.519930], [13.415852,52.513191]],
-      timestamps: [1460585940, 1460585945],
-      steps: true,
-      overview: 'simplified',
-      geometries: 'polyline'
-   }, function(err, result) {
-   console.log(result);
-});
+        var route = response.routes[0].geometry.coordinates; //This would give you the route coordinates [lng, lat]
 
-osrm.table({
-      coordinates: [[13.438640,52.519930], [13.415852,52.513191], [13.333086, 52.4224]],
-      sources: [0],
-      destinations: [1, 2]
-   }, function(err, result) {
-   console.log(result);
-});
+        //Change the route to [lat,lng] so that leaflet could understand.
+        var arrCoordinates =[];
+        Array.from(route, function (i) {
+            arrCoordinates.push(lnglatTolatlng(i));
+        });
 
-osrm.tile([17603, 10747, 15], function(err, result) {
-   console.log(result); // pbf encoded vector tile
-});
+        function lnglatTolatlng(arr) {
+            var latlng = [];
+            latlng[0] = arr[1];
+            latlng[1] = arr[0];
+            return latlng;
+        }
 
-//You can also pass it query paths directly:
+        // write the file to json!
+        const content = JSON.stringify(arrCoordinates);
 
-osrm.request('/route/v1/driving/13.438640,52.519930;13.415852,52.513191', function(err, result) {
-});
+        fs.writeFile("routelatlng.json", content, 'utf8', function (err) {
+            if (err) {
+                return console.log(err);
+            }
+            console.log("The file was saved!");
+        });
+
+    });
+
+// Run this code, when you saw "The file was saved!" in the console, you can open ./src/routelatlng.json and get the latlng array of the route going through all the spot you mentioned in coords
+// It may take a little bit longer if the distance is too long.
 
 ```
 
